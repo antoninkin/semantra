@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "ace-builds": "^1.16.0",
+    "jspdf": "^2.5.2",
     "rbush": "^3.0.1",
     "sirv-cli": "^2.0.0",
     "svelte-inview": "^4.0.0"
