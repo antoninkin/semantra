@@ -9,7 +9,7 @@
 
   function getSrc(scale: number) {
     return `/api/pdfpage?filename=${encodeURIComponent(
-      file.filename
+      file.filename,
     )}&page=${pageNumber}&scale=${scale}`;
   }
 

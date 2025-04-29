@@ -106,13 +106,13 @@
   $: processedChars = layout(
     position.page_width,
     position.page_height,
-    words[0]
+    words[0],
   );
 
   function getHighlightWordIndices(
     words: [PdfChar[], [number, number][]],
     start: number,
-    end: number
+    end: number,
   ): number[] {
     const wordIndices = words[1];
     const highlights = wordIndices
@@ -128,7 +128,7 @@
       : getHighlightWordIndices(
           words,
           selectedOffset[0] - position.char_index,
-          selectedOffset[1] - position.char_index
+          selectedOffset[1] - position.char_index,
         );
 
   $: scrollHighlights && scrollHighlightsIntoView(highlightWordIndices);
@@ -155,8 +155,8 @@
 
     const response = await fetch(
       `/api/pdfchars?filename=${encodeURIComponent(
-        file.filename
-      )}&page=${pageNumber}`
+        file.filename,
+      )}&page=${pageNumber}`,
     );
     const json = await response.json();
     chars = json.map((x) => [

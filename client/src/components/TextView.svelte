@@ -18,14 +18,14 @@
         startPos.row,
         startPos.column,
         endPos.row,
-        endPos.column
+        endPos.column,
       );
       editor.selection.setRange(range);
       editor.scrollToLine(
         Math.round((startPos.row + endPos.row) / 2),
         true,
         true,
-        () => {}
+        () => {},
       );
     }
   }

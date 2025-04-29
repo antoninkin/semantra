@@ -30,7 +30,7 @@
     e: Event,
     file: File,
     searchResult: SearchResult,
-    weight: number
+    weight: number,
   ) {
     dispatch("setPreference", {
       file,
@@ -81,7 +81,7 @@
         setPreference(e, file, searchResult, preference.weight < 0 ? 0 : -1)}
       >-</button
     >
-    {#key JSON.stringify( { filename: searchResult.filename, offset: searchResult.offset, queries: searchResult.queries, preferences: searchResult.preferences, text: searchResult.text } )}
+    {#key JSON.stringify( { filename: searchResult.filename, offset: searchResult.offset, queries: searchResult.queries, preferences: searchResult.preferences, text: searchResult.text }, )}
       <SearchResultText {searchResult} text={searchResult.text} />
     {/key}
   </div>

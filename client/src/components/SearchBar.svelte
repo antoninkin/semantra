@@ -6,7 +6,7 @@
   export let preferences: { [key: string]: Preference };
 
   $: preferenceValues = Object.values(preferences).filter(
-    (preference) => preference.weight !== 0
+    (preference) => preference.weight !== 0,
   );
 
   function getSearchKey(..._reactiveArgs: any[]) {

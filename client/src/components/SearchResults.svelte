@@ -53,7 +53,7 @@
     );
 
     const exportData = {
-      searchTerms: getSearchTerms(), // Assuming this exists in your component
+      searchTerms: getSearchTerms(),
       results: sanitizedResults,
       sort: searchResultSet.sort,
     };
@@ -63,7 +63,7 @@
     const blob = new Blob([json], { type: "application/json" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = generateFileName("json"); // Assuming this exists in your component
+    link.download = generateFileName("json");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -74,11 +74,10 @@
     const searchTerms = getSearchTerms();
     const rows: string[][] = [];
 
-    // Add search terms at the top
     if (searchTerms.length > 0) {
       rows.push(["Search Terms"]);
       rows.push([searchTerms.join(", ")]);
-      rows.push([]); // spacer row
+      rows.push([]);
     }
 
     // Header row
