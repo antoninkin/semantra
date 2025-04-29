@@ -37,7 +37,10 @@ export default {
   output: {
     sourcemap: true,
     format: "iife",
+<<<<<<< HEAD
     inlineDynamicImports: true,
+=======
+>>>>>>> master
     name: "app",
     file: "public/build/bundle.js",
   },

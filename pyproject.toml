@@ -1,9 +1,9 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=64", "wheel"]
 
 [project]
-authors = [{name = "Dylan Freedman", email = "freedmand@gmail.com"}]
+authors = [{ name = "Dylan Freedman", email = "freedmand@gmail.com" }]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
@@ -23,6 +23,7 @@ dependencies = [
   "tqdm>=4.65.0",
   "transformers>=4.27.4",
   "setuptools",
+  "PyQt5",
 ]
 description = "A semantic search CLI tool"
 name = "semantra"

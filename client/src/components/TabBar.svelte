@@ -4,6 +4,10 @@
   export let files: File[];
   export let index: number;
   export let disabled: boolean;
+<<<<<<< HEAD
+=======
+  export let onDelete: (filename: string) => void = () => {}; // Default no-op function
+>>>>>>> master
 </script>
 
 <div class="flex flex-row border-b-4 border-black relative h-10">
@@ -12,6 +16,7 @@
   >
     <div class="inline-flex flex-nowrap flex-row items-center h-full pl-2">
       {#each files as file, i}
+<<<<<<< HEAD
         <button
           {disabled}
           class:active-tab={i === index}
@@ -20,6 +25,26 @@
         >
           {file.basename}
         </button>
+=======
+        <div class="flex items-center mr-2">
+          <button
+            {disabled}
+            class:active-tab={i === index}
+            class="text-xs rounded-l py-1 px-2 border border-transparent border-r-0"
+            on:click={() => (index = i)}
+          >
+            {file.basename}
+          </button>
+          <button
+            class="text-xs rounded-r py-1 px-1 border border-transparent bg-red-100 hover:bg-red-200 text-red-700"
+            class:active-tab-delete={i === index}
+            title="Delete this file"
+            on:click|stopPropagation={() => onDelete(file.filename)}
+          >
+            ×
+          </button>
+        </div>
+>>>>>>> master
       {/each}
     </div>
   </div>
@@ -33,4 +58,11 @@
   .active-tab {
     @apply bg-white border-black;
   }
+<<<<<<< HEAD
+=======
+
+  .active-tab-delete {
+    @apply border-black bg-red-200;
+  }
+>>>>>>> master
 </style>

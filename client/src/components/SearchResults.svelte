@@ -7,7 +7,10 @@
     ScoredSearchResult,
   } from "../types";
   import SearchResultComponent from "./SearchResult.svelte";
+<<<<<<< HEAD
   import { jsPDF } from "jspdf";
+=======
+>>>>>>> master
 
   export let searchResultSet: SearchResultSet;
   export let filesByPath: { [path: string]: File };
@@ -15,7 +18,129 @@
   export let activeFile: File | null;
   export let unsearched: boolean;
   export let sidebarExpanded = false;
+<<<<<<< HEAD
   export let scoredSearchResultSet: ScoredSearchResult[];
+=======
+
+  type QueryWeight = {
+    query: string;
+    weight: number;
+  };
+
+  type MatchResult = {
+    text: string;
+    score: number;
+    offset: [number, number];
+    queryWeights: QueryWeight[];
+  };
+
+  type DocumentResult = {
+    document: string;
+    matches: MatchResult[];
+  };
+
+  function exportJSON() {
+    // Create sanitized versions of all objects
+    const sanitizedResults = searchResultSet.results.map(
+      ([filename, results]) => [
+        filename,
+        results.map((result) => ({
+          text: result.text,
+          distance: result.distance,
+          offset: [...result.offset],
+          index: result.index,
+          filename: result.filename,
+          queries: result.queries.map((q) => ({
+            query: q.query,
+            weight: q.weight,
+          })),
+          // Omit any properties that might contain PDF references
+        })),
+      ],
+    );
+
+    const exportData = {
+      searchTerms: getSearchTerms(), // Assuming this exists in your component
+      results: sanitizedResults,
+      sort: searchResultSet.sort,
+    };
+
+    // Generate and download the JSON file
+    const json = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = generateFileName("json"); // Assuming this exists in your component
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  }
+
+  function exportCSV(): void {
+    const searchTerms = getSearchTerms();
+    const rows: string[][] = [];
+
+    // Add search terms at the top
+    if (searchTerms.length > 0) {
+      rows.push(["Search Terms"]);
+      rows.push([searchTerms.join(", ")]);
+      rows.push([]); // spacer row
+    }
+
+    // Header row
+    rows.push([
+      "Document",
+      "Index",
+      "Passage",
+      "Score",
+      "Offset Start",
+      "Offset End",
+      "Queries (with weights)",
+    ]);
+
+    scoredSearchResultSet.forEach(([filename, results]) => {
+      const file = filesByPath[filename];
+
+      results.forEach((result) => {
+        const queries = result.queries
+          .map((q) => `${q.query} (${q.weight.toFixed(3)})`)
+          .join("; ");
+
+        const preferences = result.preferences?.join("; ") ?? "";
+
+        rows.push([
+          file?.basename ?? filename,
+          result.index.toString(),
+          result.text.trim().replace(/[\n\r]+/g, " "),
+          result.distance.toFixed(3),
+          result.offset?.[0]?.toString() ?? "",
+          result.offset?.[1]?.toString() ?? "",
+          result.preferences?.length
+            ? result.preferences
+                .map((p) => `${p.query} (${p.weight})`)
+                .join("; ")
+            : queries,
+        ]);
+      });
+    });
+
+    const csv = rows
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+      )
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = generateFileName("csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  }
+>>>>>>> master
 
   let filterViewed = false;
   let excerptView = false;
@@ -105,6 +230,7 @@
 
     return `${baseFileName}.${extension}`;
   }
+<<<<<<< HEAD
 
   function exportPDF(): void {
     const doc = new jsPDF();
@@ -250,6 +376,10 @@
 </script>
 
 <svelte:window on:click={handleClickOutside} />
+=======
+</script>
+
+>>>>>>> master
 <div
   class="absolute top-11 z-10 hidden max-sm:block"
   class:hide={sidebarExpanded}
@@ -322,7 +452,11 @@
       >
       <div class="relative inline-block" id="export-dropdown">
         <button
+<<<<<<< HEAD
           class="button export-icon"
+=======
+          class="button save-icon"
+>>>>>>> master
           title="Export results"
           on:click|stopPropagation={() => (showExportMenu = !showExportMenu)}
           >Export results</button
@@ -333,12 +467,22 @@
           >
             <button
               class="block px-4 py-2 text-sm w-full text-left hover:bg-gray-100"
+<<<<<<< HEAD
               on:click={() => {
                 exportPDF();
                 showExportMenu = false;
               }}
             >
               Export as PDF
+=======
+              title="Save results to json"
+              on:click={() => {
+                exportJSON();
+                showExportMenu = false;
+              }}
+            >
+              Export as JSON
+>>>>>>> master
             </button>
             <button
               class="block px-4 py-2 text-sm w-full text-left hover:bg-gray-100"
@@ -349,6 +493,7 @@
             >
               Export as CSV
             </button>
+<<<<<<< HEAD
             <button
               class="block px-4 py-2 text-sm w-full text-left hover:bg-gray-100"
               on:click={() => {
@@ -358,6 +503,8 @@
             >
               Export as Text
             </button>
+=======
+>>>>>>> master
           </div>
         {/if}
       </div>
@@ -373,7 +520,11 @@
         <ul class="-mt-2">
           {#each sortedSearchResults as searchResult}
             {@const file = filesByPath[searchResult.filename]}
+<<<<<<< HEAD
             {#if filterFilename(filenameFilter, file.basename)}
+=======
+            {#if file && filterFilename(filenameFilter, file.basename)}
+>>>>>>> master
               {#key searchResult}
                 <SearchResultComponent
                   on:navigate
@@ -391,7 +542,11 @@
         <!-- File view -->
         {#each scoredSearchResultSet as [filename, searchResults, score]}
           {@const file = filesByPath[filename]}
+<<<<<<< HEAD
           {#if filterFilename(filenameFilter, file.basename)}
+=======
+          {#if file && filterFilename(filenameFilter, file.basename)}
+>>>>>>> master
             {#key [filename, searchResults, score]}
               <details
                 open={detailReverse
@@ -402,7 +557,11 @@
                 <summary
                   class="font-mono font-bold cursor-pointer select-none px-2 pt-2 top-0 sticky bg-slate-100"
                 >
+<<<<<<< HEAD
                   {file.basename}
+=======
+                  {file ? file.basename : "Unknown file"}
+>>>>>>> master
                   <span class="text-xs highlight px-1 rounded"
                     >{score.toFixed(2)}</span
                   >
@@ -473,16 +632,27 @@
     background-size: 70%;
   }
 
+<<<<<<< HEAD
+=======
+  .save-icon {
+    background-image: url("../download.png");
+    background-size: 70%;
+  }
+
+>>>>>>> master
   .toggle-detail-icon {
     background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOSIgaGVpZ2h0PSIxNSIgZmlsbD0ibm9uZSI+PHBhdGggc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik01LjIuNHY5LjdNLjQgNS4zSDEwTTkuMiAxMy43aDguOSIvPjwvc3ZnPg==");
     background-size: 60%;
   }
 
+<<<<<<< HEAD
   .export-icon {
     background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMSAxNXY0YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0ydi00Ii8+PHBvbHlsaW5lIHBvaW50cz0iNyAxMCAxMiAxNSAxNyAxMCIvPjxsaW5lIHgxPSIxMiIgeTE9IjE1IiB4Mj0iMTIiIHkyPSIzIi8+PC9zdmc+");
     background-size: 70%;
   }
 
+=======
+>>>>>>> master
   .hamburger-icon {
     width: 32px;
     background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOSIgaGVpZ2h0PSIxMSIgZmlsbD0ibm9uZSI+PHBhdGggc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik0uMyAxLjZoMTcuOU0uMyA5LjhoMTcuOU0uMyA1LjdoMTcuOSIvPjwvc3ZnPg==");
@@ -490,8 +660,18 @@
   }
 
   .hide {
+<<<<<<< HEAD
     /* Breakpoint only */
     @apply max-sm:!hidden;
+=======
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .hide {
+      display: block !important;
+    }
+>>>>>>> master
   }
 
   .unsearched {
