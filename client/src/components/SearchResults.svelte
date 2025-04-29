@@ -7,10 +7,6 @@
     ScoredSearchResult,
   } from "../types";
   import SearchResultComponent from "./SearchResult.svelte";
-<<<<<<< HEAD
-  import { jsPDF } from "jspdf";
-=======
->>>>>>> master
 
   export let searchResultSet: SearchResultSet;
   export let filesByPath: { [path: string]: File };
@@ -18,9 +14,6 @@
   export let activeFile: File | null;
   export let unsearched: boolean;
   export let sidebarExpanded = false;
-<<<<<<< HEAD
-  export let scoredSearchResultSet: ScoredSearchResult[];
-=======
 
   type QueryWeight = {
     query: string;
@@ -140,7 +133,6 @@
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
   }
->>>>>>> master
 
   let filterViewed = false;
   let excerptView = false;
@@ -230,156 +222,8 @@
 
     return `${baseFileName}.${extension}`;
   }
-<<<<<<< HEAD
-
-  function exportPDF(): void {
-    const doc = new jsPDF();
-    let yPos = 20;
-    const lineHeight = 7;
-    const margin = 20;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const maxWidth = pageWidth - 2 * margin;
-
-    // Title
-    doc.setFontSize(16);
-    doc.text("Search Results", margin, yPos);
-    yPos += lineHeight * 2;
-
-    // Add search terms
-    const searchTerms = getSearchTerms();
-    if (searchTerms.length > 0) {
-      doc.setFontSize(12);
-      doc.text("Search terms: " + searchTerms.join(", "), margin, yPos);
-      yPos += lineHeight * 2;
-    }
-
-    scoredSearchResultSet.forEach(([filename, results, score]) => {
-      const file = filesByPath[filename];
-
-      // Document name
-      doc.setFont(undefined, "bold");
-      doc.text(`Document: ${file.basename}`, margin, yPos);
-      yPos += lineHeight * 1.5;
-
-      results.forEach((result, idx) => {
-        // Passage text
-        doc.setFont(undefined, "normal");
-        const lines = doc.splitTextToSize(result.text.trim(), maxWidth);
-        lines.forEach((line) => {
-          if (yPos > 280) {
-            doc.addPage();
-            yPos = 20;
-          }
-          doc.text(line, margin, yPos);
-          yPos += lineHeight;
-        });
-
-        // Score in bold
-        doc.setFont(undefined, "bold");
-        doc.text(`Score: ${result.distance.toFixed(3)}`, margin, yPos);
-        yPos += lineHeight;
-
-        // Add dividing line
-        if (yPos > 280) {
-          doc.addPage();
-          yPos = 20;
-        }
-        doc.line(margin, yPos, pageWidth - margin, yPos);
-        yPos += lineHeight * 1.5;
-      });
-    });
-
-    doc.save(generateFileName("pdf"));
-  }
-
-  function exportCSV(): void {
-    const searchTerms = getSearchTerms();
-    const rows = [];
-
-    // Add search terms in first rows
-    if (searchTerms.length > 0) {
-      rows.push(["Search Terms"]);
-      rows.push([searchTerms.join(", ")]);
-      rows.push([]); // Empty row for spacing
-    }
-
-    // Add header
-    rows.push(["Document", "Passage", "Score"]);
-
-    scoredSearchResultSet.forEach(([filename, results, score]) => {
-      const file = filesByPath[filename];
-      results.forEach((result) => {
-        rows.push([
-          file.basename,
-          result.text.trim().replace(/[\n\r]+/g, " "),
-          result.distance.toFixed(3),
-        ]);
-      });
-    });
-
-    const csv = rows
-      .map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
-      )
-      .join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = generateFileName("csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-  }
-
-  function exportTXT(): void {
-    const searchTerms = getSearchTerms();
-    const content = ["Search Results"];
-
-    // Add search terms
-    if (searchTerms.length > 0) {
-      content.push(`Search terms: ${searchTerms.join(", ")}`);
-    }
-    content.push(""); // Empty line for spacing
-
-    scoredSearchResultSet.forEach(([filename, results, score]) => {
-      const file = filesByPath[filename];
-      content.push(`\nDocument: ${file.basename}\n`);
-
-      results.forEach((result, idx) => {
-        content.push(`\nPassage ${idx + 1}:`);
-        content.push(result.text.trim());
-        content.push(`Score: ${result.distance.toFixed(3)}`);
-        content.push("\n" + "-".repeat(40) + "\n");
-      });
-    });
-
-    const blob = new Blob([content.join("\n")], {
-      type: "text/plain;charset=utf-8;",
-    });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = generateFileName("txt");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-  }
-
-  function handleClickOutside(event: MouseEvent) {
-    const dropdown = document.getElementById("export-dropdown");
-    if (dropdown && !dropdown.contains(event.target as Node)) {
-      showExportMenu = false;
-    }
-  }
 </script>
 
-<svelte:window on:click={handleClickOutside} />
-=======
-</script>
-
->>>>>>> master
 <div
   class="absolute top-11 z-10 hidden max-sm:block"
   class:hide={sidebarExpanded}
@@ -452,11 +296,7 @@
       >
       <div class="relative inline-block" id="export-dropdown">
         <button
-<<<<<<< HEAD
-          class="button export-icon"
-=======
           class="button save-icon"
->>>>>>> master
           title="Export results"
           on:click|stopPropagation={() => (showExportMenu = !showExportMenu)}
           >Export results</button
@@ -467,14 +307,6 @@
           >
             <button
               class="block px-4 py-2 text-sm w-full text-left hover:bg-gray-100"
-<<<<<<< HEAD
-              on:click={() => {
-                exportPDF();
-                showExportMenu = false;
-              }}
-            >
-              Export as PDF
-=======
               title="Save results to json"
               on:click={() => {
                 exportJSON();
@@ -482,7 +314,6 @@
               }}
             >
               Export as JSON
->>>>>>> master
             </button>
             <button
               class="block px-4 py-2 text-sm w-full text-left hover:bg-gray-100"
@@ -493,18 +324,6 @@
             >
               Export as CSV
             </button>
-<<<<<<< HEAD
-            <button
-              class="block px-4 py-2 text-sm w-full text-left hover:bg-gray-100"
-              on:click={() => {
-                exportTXT();
-                showExportMenu = false;
-              }}
-            >
-              Export as Text
-            </button>
-=======
->>>>>>> master
           </div>
         {/if}
       </div>
@@ -520,11 +339,7 @@
         <ul class="-mt-2">
           {#each sortedSearchResults as searchResult}
             {@const file = filesByPath[searchResult.filename]}
-<<<<<<< HEAD
-            {#if filterFilename(filenameFilter, file.basename)}
-=======
             {#if file && filterFilename(filenameFilter, file.basename)}
->>>>>>> master
               {#key searchResult}
                 <SearchResultComponent
                   on:navigate
@@ -542,11 +357,7 @@
         <!-- File view -->
         {#each scoredSearchResultSet as [filename, searchResults, score]}
           {@const file = filesByPath[filename]}
-<<<<<<< HEAD
-          {#if filterFilename(filenameFilter, file.basename)}
-=======
           {#if file && filterFilename(filenameFilter, file.basename)}
->>>>>>> master
             {#key [filename, searchResults, score]}
               <details
                 open={detailReverse
@@ -557,11 +368,7 @@
                 <summary
                   class="font-mono font-bold cursor-pointer select-none px-2 pt-2 top-0 sticky bg-slate-100"
                 >
-<<<<<<< HEAD
-                  {file.basename}
-=======
                   {file ? file.basename : "Unknown file"}
->>>>>>> master
                   <span class="text-xs highlight px-1 rounded"
                     >{score.toFixed(2)}</span
                   >
@@ -632,27 +439,16 @@
     background-size: 70%;
   }
 
-<<<<<<< HEAD
-=======
   .save-icon {
     background-image: url("../download.png");
     background-size: 70%;
   }
 
->>>>>>> master
   .toggle-detail-icon {
     background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOSIgaGVpZ2h0PSIxNSIgZmlsbD0ibm9uZSI+PHBhdGggc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik01LjIuNHY5LjdNLjQgNS4zSDEwTTkuMiAxMy43aDguOSIvPjwvc3ZnPg==");
     background-size: 60%;
   }
 
-<<<<<<< HEAD
-  .export-icon {
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMSAxNXY0YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0ydi00Ii8+PHBvbHlsaW5lIHBvaW50cz0iNyAxMCAxMiAxNSAxNyAxMCIvPjxsaW5lIHgxPSIxMiIgeTE9IjE1IiB4Mj0iMTIiIHkyPSIzIi8+PC9zdmc+");
-    background-size: 70%;
-  }
-
-=======
->>>>>>> master
   .hamburger-icon {
     width: 32px;
     background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOSIgaGVpZ2h0PSIxMSIgZmlsbD0ibm9uZSI+PHBhdGggc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIGQ9Ik0uMyAxLjZoMTcuOU0uMyA5LjhoMTcuOU0uMyA1LjdoMTcuOSIvPjwvc3ZnPg==");
@@ -660,10 +456,6 @@
   }
 
   .hide {
-<<<<<<< HEAD
-    /* Breakpoint only */
-    @apply max-sm:!hidden;
-=======
     display: none;
   }
 
@@ -671,7 +463,6 @@
     .hide {
       display: block !important;
     }
->>>>>>> master
   }
 
   .unsearched {

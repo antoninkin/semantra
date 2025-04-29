@@ -16,12 +16,9 @@
   import PdfView from "./components/PdfView.svelte";
   import TabBar from "./components/TabBar.svelte";
 
-<<<<<<< HEAD
-=======
   // base URL for the Semantra API
   const API_BASE_URL = ""; // Default semantra port is usually 5000
 
->>>>>>> master
   let files: File[] = [];
   let activeFileIndex = 0;
   let tokens: string[] = [];
@@ -30,29 +27,16 @@
   let updating = false;
   let unsearched = true;
   let searchResultsElem: SearchResults;
-<<<<<<< HEAD
-=======
   let currentSearchTerm = "";
-  let uploading = false;
-  let uploadError: string | null = null;
->>>>>>> master
 
   let preferences: { [key: string]: Preference } = {};
-
   $: activeFile =
     activeFileIndex < files.length ? files[activeFileIndex] : null;
   $: filesByPath = Object.fromEntries(
-<<<<<<< HEAD
-    files.map((file) => [file.filename, file])
-  );
-  $: fileIndicesByPath = Object.fromEntries(
-    files.map((file, index) => [file.filename, index])
-=======
     files.map((file) => [file.filename, file]),
   );
   $: fileIndicesByPath = Object.fromEntries(
     files.map((file, index) => [file.filename, index]),
->>>>>>> master
   );
 
   $: updateFile(activeFile);
@@ -66,27 +50,6 @@
     if (file == null) return;
 
     updating = true;
-<<<<<<< HEAD
-
-    // Get text
-    const textResponse = await fetch(
-      `/api/text?filename=${encodeURIComponent(file.filename)}`
-    );
-    tokens = await textResponse.json();
-    text = tokens.join("");
-
-    if (file.filetype === "pdf") {
-      const pdfResponse = await fetch(
-        `/api/pdfpositions?filename=${encodeURIComponent(file.filename)}`
-      );
-      pdfPositions = await pdfResponse.json();
-    }
-
-    await tick();
-    navigate();
-
-    updating = false;
-=======
     uploadError = null;
 
     try {
@@ -124,7 +87,6 @@
     } finally {
       updating = false;
     }
->>>>>>> master
   }
 
   let searchResultSet: SearchResultSet = {
@@ -163,24 +125,17 @@
   }
 
   async function handleSearch(query: string) {
-<<<<<<< HEAD
-=======
     currentSearchTerm = query;
->>>>>>> master
     const preferenceValues = Object.values(preferences)
       .filter((preference) => preference.weight !== 0)
       .map((x) => ({ ...x }));
 
     // Ignore empty queries
     if (query.trim() === "" && preferenceValues.length === 0) {
-<<<<<<< HEAD
-      searchResultSet = [];
-=======
       searchResultSet = {
         results: [],
         sort: "asc",
       };
->>>>>>> master
       scrollSearchResultsToTop();
       return;
     }
@@ -194,19 +149,12 @@
 
     const totalPositiveCount =
       parsedQueries.filter((query) => query.weight > 0).length +
-<<<<<<< HEAD
-      preferenceValues.filter((preference) => preference.weight > 0).length;
-    const totalNegativeCount =
-      parsedQueries.filter((query) => query.weight < 0).length +
-      preferenceValues.filter((preference) => preference.weight < 0).length;
-=======
         preferenceValues.filter((preference) => preference.weight > 0).length ||
       1;
     const totalNegativeCount =
       parsedQueries.filter((query) => query.weight < 0).length +
         preferenceValues.filter((preference) => preference.weight < 0).length ||
       1;
->>>>>>> master
     for (const query of parsedQueries) {
       if (query.weight > 0) {
         query.weight *= POSITIVE_RATIO / totalPositiveCount;
@@ -222,27 +170,6 @@
       }
     }
 
-<<<<<<< HEAD
-    const response = await fetch("/api/query", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        queries: parsedQueries,
-        preferences: preferenceValues,
-      }),
-    });
-    searchResultSet = await response.json();
-    sidebarExpanded = true;
-    scrollSearchResultsToTop();
-    unsearched = false;
-  }
-
-  onMount(async () => {
-    const filesResponse = await fetch("/api/files");
-    files = await filesResponse.json();
-=======
     try {
       const response = await fetch(`${API_BASE_URL}/api/query`, {
         method: "POST",
@@ -280,7 +207,6 @@
     } catch (error) {
       console.error("Error connecting to server:", error);
     }
->>>>>>> master
   });
 
   $: tokenOffsets = tokens.reduce(
@@ -289,39 +215,23 @@
       acc.push(lastOffset + token.length);
       return acc;
     },
-<<<<<<< HEAD
-    [0]
-=======
     [0],
->>>>>>> master
   );
 
   let pendingNavigation: Navigation | null = null;
 
   async function navigate() {
     if (pendingNavigation == null) return;
-<<<<<<< HEAD
-    sidebarExpanded = false;
-    if (textView) {
-      textView.navigate(
-        tokenOffsets[pendingNavigation.searchResult.offset[0]],
-        tokenOffsets[pendingNavigation.searchResult.offset[1]]
-=======
     //sidebarExpanded = false;
     if (textView) {
       textView.navigate(
         tokenOffsets[pendingNavigation.searchResult.offset[0]],
         tokenOffsets[pendingNavigation.searchResult.offset[1]],
->>>>>>> master
       );
     } else if (pdfView) {
       pdfView.navigate(
         tokenOffsets[pendingNavigation.searchResult.offset[0]],
-<<<<<<< HEAD
-        tokenOffsets[pendingNavigation.searchResult.offset[1]]
-=======
         tokenOffsets[pendingNavigation.searchResult.offset[1]],
->>>>>>> master
       );
     }
     pendingNavigation = null;
@@ -352,8 +262,6 @@
     if (searchBar != null) searchBar.scrollToBottomOfPreferences();
   }
 
-<<<<<<< HEAD
-=======
   async function handleFileUpload(event) {
     const selectedFiles = Array.from(event.target.files as FileList);
     if (selectedFiles.length === 0) {
@@ -453,7 +361,6 @@
     }
   }
 
->>>>>>> master
   let sidebarExpanded = true;
 </script>
 
@@ -464,15 +371,6 @@
     class="flex flex-row border-b-4 border-black py-4 px-8 max-lg:px-4 items-start"
   >
     <h1 class="text-3xl font-mono font-bold inline-flex pr-6 mt-1">Semantra</h1>
-<<<<<<< HEAD
-    <SearchBar
-      bind:this={searchBar}
-      {preferences}
-      on:setPreference={(e) => setPreference(e.detail)}
-      on:search={(e) => handleSearch(e.detail)}
-    />
-  </header>
-=======
     <div class="flex-1 flex items-center">
       <SearchBar
         bind:this={searchBar}
@@ -537,7 +435,6 @@
     </div>
   {/if}
 
->>>>>>> master
   <article class="flex flex-1 flex-row relative items-stretch">
     <SearchResults
       bind:sidebarExpanded
@@ -552,16 +449,12 @@
     />
     <div class="flex flex-col flex-1">
       {#if activeFile != null}
-<<<<<<< HEAD
-        <TabBar disabled={updating} bind:index={activeFileIndex} {files} />
-=======
         <TabBar
           disabled={updating}
           bind:index={activeFileIndex}
           {files}
           onDelete={(filename) => deleteDocument(filename)}
         />
->>>>>>> master
         {#if activeFile.filetype === "text"}
           <TextView
             bind:this={textView}
@@ -574,8 +467,6 @@
             positions={pdfPositions}
           />
         {/if}
-<<<<<<< HEAD
-=======
       {:else if files.length === 0}
         <div class="flex flex-col items-center justify-center h-full">
           <p class="text-xl font-semibold mb-4">
@@ -585,7 +476,6 @@
             Upload files using the button in the top right
           </p>
         </div>
->>>>>>> master
       {:else}
         <div class="text-gray-600 ml-2 mt-2 text-sm">Loading...</div>
       {/if}
