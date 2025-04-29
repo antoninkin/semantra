@@ -3,9 +3,6 @@ import io
 import json
 import math
 import os
-<<<<<<< HEAD
-
-=======
 import sys
 import gc
 from pathlib import Path
@@ -14,19 +11,11 @@ import tempfile
 import logging
 import atexit
 import signal
->>>>>>> master
 import click
 import numpy as np
 import pkg_resources
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request, send_file, send_from_directory
-<<<<<<< HEAD
-from tqdm import tqdm
-
-from .models import BaseModel, TransformerModel, as_numpy, models
-from .pdf import get_pdf_content
-from .util import (
-=======
 from flask_cors import CORS
 from tqdm import tqdm
 from werkzeug.utils import secure_filename
@@ -35,7 +24,6 @@ import tempfile
 from models import BaseModel, TransformerModel, as_numpy, models
 from pdf import get_pdf_content
 from util import (
->>>>>>> master
     HASH_LENGTH,
     file_md5,
     get_annoy_filename,
@@ -52,15 +40,6 @@ from util import (
     write_annoy_db,
     write_embedding,
 )
-<<<<<<< HEAD
-
-VERSION = pkg_resources.require("semantra")[0].version
-DEFAULT_ENCODING = "utf-8"
-DEFAULT_PORT = 8080
-
-package_directory = os.path.dirname(os.path.abspath(__file__))
-
-=======
 from PyQt5.QtWidgets import QApplication, QFileDialog
 
 VERSION = pkg_resources.require("semantra")[0].version
@@ -71,7 +50,6 @@ package_directory = os.path.dirname(os.path.abspath(__file__))
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
->>>>>>> master
 
 class Content:
     def __init__(self, rawtext, filename):
@@ -308,15 +286,9 @@ def process(
                         # Call .cpu if embedding_results contains it
                         if hasattr(embedding_results, "cpu"):
                             embedding_results = embedding_results.cpu()
-<<<<<<< HEAD
-                        embeddings[
-                            embedding_index : embedding_index + len(pool)
-                        ] = embedding_results
-=======
                         embeddings[embedding_index : embedding_index + len(pool)] = (
                             embedding_results
                         )
->>>>>>> master
                         for embedding in embedding_results:
                             write_embedding(f, embedding, num_dimensions)
                         embedding_index += len(pool)
@@ -387,8 +359,6 @@ def process_windows(windows: str) -> "list[tuple[int, int, int]]":
             yield int(window), 0, 0
 
 
-<<<<<<< HEAD
-=======
 def ask_for_pdf_file():
     app = QApplication(sys.argv)
     pdf_path, _ = QFileDialog.getOpenFileName(
@@ -403,7 +373,6 @@ def ask_for_pdf_file():
 
 
 
->>>>>>> master
 @click.command()
 @click.argument("filename", type=click.Path(exists=True), nargs=-1)
 @click.option(
@@ -449,11 +418,7 @@ def ask_for_pdf_file():
 @click.option(
     "--host",
     type=str,
-<<<<<<< HEAD
-    default="127.0.0.1",
-=======
     default="0.0.0.0",
->>>>>>> master
     show_default=True,
     help="Host to use for embedding server. Set to 0.0.0.0 to make the server available externally.",
 )
@@ -588,8 +553,6 @@ def ask_for_pdf_file():
     default=None,
     help="Directory to store semantra files in",
 )
-<<<<<<< HEAD
-=======
 @click.option(
     "--search",
     type=str,
@@ -611,18 +574,12 @@ def ask_for_pdf_file():
 )
 
 
->>>>>>> master
 def main(
     filename,
     windows="128_0_16",
     no_server=False,
-<<<<<<< HEAD
-    port=8080,
-    host="127.0.0.1",
-=======
     port=5000,
     host="0.0.0.0",
->>>>>>> master
     pool_size=None,
     pool_count=None,
     doc_token_pre=None,
@@ -647,12 +604,9 @@ def main(
     list_models=False,
     show_semantra_dir=False,
     semantra_dir=None,  # auto
-<<<<<<< HEAD
-=======
     search=None,
     save_search_to=None,
     show_dialog=False,
->>>>>>> master
 ):
     if version:
         print(VERSION)
@@ -669,19 +623,10 @@ def main(
     if show_semantra_dir:
         print(semantra_dir)
         return
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> master
     # Load environment from Semantra dir
     env_path = os.path.join(semantra_dir, ".env")
     load_dotenv(env_path)
 
-<<<<<<< HEAD
-    if filename is None or len(filename) == 0:
-        raise click.UsageError("Must provide a filename to process/query")
-=======
     # Default to empty files list
     if filename is None or len(filename) == 0:
         # Show file dialog only if explicitly requested
@@ -701,7 +646,6 @@ def main(
         print(f"Opening Semantra with {filename}")
     else:
         print("Opening Semantra with no files")
->>>>>>> master
 
     processed_windows = list(process_windows(windows))
 
@@ -772,10 +716,6 @@ def main(
         # Return the now-cached content
         return content
 
-<<<<<<< HEAD
-    # Start a Flask server
-    app = Flask(__name__)
-=======
     def cleanup_resources():
         print("Cleaning up resources before shutdown...")
         # Force garbage collection first to resolve any circular references
@@ -823,16 +763,11 @@ def main(
     print("Starting flask server...")
     app = Flask(__name__)
     CORS(app)
->>>>>>> master
 
     @app.route("/")
     def base():
         return send_from_directory(
-<<<<<<< HEAD
-            pkg_resources.resource_filename("semantra.semantra", "client_public"),
-=======
             pkg_resources.resource_filename("semantra", "client_public"),
->>>>>>> master
             "index.html",
         )
 
@@ -840,37 +775,22 @@ def main(
     @app.route("/<path:path>")
     def home(path):
         return send_from_directory(
-<<<<<<< HEAD
-            pkg_resources.resource_filename("semantra.semantra", "client_public"),
-=======
             pkg_resources.resource_filename("semantra", "client_public"),
->>>>>>> master
             path,
         )
 
     @app.route("/api/files", methods=["GET"])
-<<<<<<< HEAD
-    def files():
-        return jsonify(
-            [
-                {
-                    "basename": doc.base_filename,
-=======
     def api_files():
         """API endpoint to get a list of all available files"""
         try:
             files_list = [
                 {
                     "basename": os.path.basename(doc.filename),
->>>>>>> master
                     "filename": doc.filename,
                     "filetype": doc.content.filetype,
                 }
                 for doc in documents.values()
             ]
-<<<<<<< HEAD
-        )
-=======
             return jsonify(files_list)
         except Exception as e:
             app.logger.error(f"Error in /api/files: {str(e)}")
@@ -983,18 +903,11 @@ def main(
         except Exception as e:
             logger.error(f"Error deleting document: {str(e)}", exc_info=True)
             return jsonify({'error': str(e)}), 500
->>>>>>> master
 
     @app.route("/api/query", methods=["POST"])
     def query():
         queries = request.json["queries"]
         preferences = request.json["preferences"]
-<<<<<<< HEAD
-        if svm:
-            return querysvm()
-        if annoy:
-            return queryann()
-=======
         return jsonify(query_by_queries_and_preferences(queries, preferences))
 
     def query_by_search_term(search_term: str):
@@ -1014,7 +927,6 @@ def main(
         if annoy:
             ann_results = queryann_by_queries_and_preferences(queries, preferences)
             return ann_results
->>>>>>> master
 
         # Get combined query and preference embedding
         embedding = model.embed_queries_and_preferences(queries, preferences, documents)
@@ -1048,13 +960,9 @@ def main(
                     }
                 )
             results.append([doc.filename, sub_results])
-<<<<<<< HEAD
-        return jsonify(sort_results(results, True))
-=======
 
         response = sort_results(results, True)
         return response
->>>>>>> master
 
     @app.route("/api/querysvm", methods=["POST"])
     def querysvm():
@@ -1062,13 +970,9 @@ def main(
 
         queries = request.json["queries"]
         preferences = request.json["preferences"]
-<<<<<<< HEAD
-
-=======
         return jsonify(querysvm_by_queries_and_preferences(queries, preferences))
 
     def querysvm_by_queries_and_preferences(queries, preferences):
->>>>>>> master
         # Get combined query and preference embedding
         embedding = model.embed_queries_and_preferences(queries, preferences, documents)
         results = []
@@ -1113,22 +1017,15 @@ def main(
                 )
             results.append([doc.filename, sub_results])
 
-<<<<<<< HEAD
-        return jsonify(sort_results(results, True))
-=======
         return sort_results(results, True)
->>>>>>> master
 
     @app.route("/api/queryann", methods=["POST"])
     def queryann():
         queries = request.json["queries"]
         preferences = request.json["preferences"]
-<<<<<<< HEAD
-=======
         return jsonify(query_by_queries_and_preferences(queries, preferences))
 
     def queryann_by_queries_and_preferences(queries, preferences):
->>>>>>> master
 
         # Get combined query and preference embedding
         embedding = model.embed_queries_and_preferences(queries, preferences, documents)
@@ -1157,11 +1054,7 @@ def main(
                     }
                 )
             results.append([doc.filename, sub_results])
-<<<<<<< HEAD
-        return jsonify(sort_results(results, True))
-=======
         return sort_results(results, True)
->>>>>>> master
 
     @app.route("/api/explain", methods=["POST"])
     def explain():
@@ -1283,20 +1176,6 @@ def main(
         filename = request.args.get("filename")
         return jsonify(documents[filename].text_chunks)
 
-<<<<<<< HEAD
-    if not no_server:
-        try:
-            app.run(host=host, port=port)
-        except SystemExit as e:
-            import sys
-            sys.tracebacklimit=0
-            if port == DEFAULT_PORT:
-                raise Exception(
-                    f'Try running again and adding `--port <port>` to the command to specify a different port.'
-                ) from None
-            else:
-                raise Exception(f"Try specifying a different port with `--port <port>`.") from None
-=======
     def save_dict_as_json_to_path(data: dict, path: str):
         full_path = Path(os.path.abspath(path))
         extension = os.path.splitext(full_path)[1]
@@ -1331,7 +1210,6 @@ def main(
                 raise Exception(
                     f"Try specifying a different port with `--port <port>`."
                 ) from None
->>>>>>> master
 
 
 if __name__ == "__main__":

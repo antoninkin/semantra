@@ -3,11 +3,7 @@ from threading import Lock
 import json
 import os
 from tqdm import tqdm
-<<<<<<< HEAD
-from .util import get_converted_pdf_txt_filename, get_pdf_positions_filename
-=======
 from util import get_converted_pdf_txt_filename, get_pdf_positions_filename
->>>>>>> master
 
 mutexes = {}
 
@@ -45,8 +41,6 @@ class PDFContent:
             ]
             return [(c, b) for c, b in list(zip(chars, char_boxes))]
 
-<<<<<<< HEAD
-=======
     def close(self):
         """Properly close and release resources"""
         try:
@@ -60,7 +54,6 @@ class PDFContent:
         """Ensure resources are released when object is garbage collected"""
         self.close()
 
->>>>>>> master
 
 # Page separator character
 LINE_FEED = "\f"
