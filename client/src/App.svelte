@@ -28,6 +28,8 @@
   let unsearched = true;
   let searchResultsElem: SearchResults;
   let currentSearchTerm = "";
+  let uploading = false;
+  let uploadError: string | null = null;
 
   let preferences: { [key: string]: Preference } = {};
   $: activeFile =
