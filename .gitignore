@@ -1,0 +1,13 @@
+.*
+!.gitignore
+!.vscode
+__pycache__
+*.py[cod]
+dist
+*.egg-info
+venv
+build
+!client/public/build
+client/public/config
+client/public/content
+client/public/models
